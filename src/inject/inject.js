@@ -38,15 +38,36 @@ function addButtons(){
   
   for (var i = 0; i < assignments.length; i++) {
     var editElement = document.createElement("td");
-    editElement.setAttribute("class", "editIconsContainer");
+    editElement.className = "editIconsContainer";
   
     var editIconElement = document.createElement("span");
-    editIconElement.setAttribute("class", "fa fa-pencil-square-o");
+    editIconElement.className = "fa fa-pencil-square-o fa-lg editIcons";
     editElement.appendChild(editIconElement);
+    
+    var deleteIconElement = document.createElement("span");
+    deleteIconElement.className = "fa fa-times fa-lg editIcons";
+    editElement.appendChild(deleteIconElement);
     
     assignments[i].appendChild(editElement);
   }
   
+  var floatButtonsDiv = document.createElement("div");
+  floatButtonsDiv.className = "floatButtonsDiv";
+  
+  var newAssignmentIconElement = document.createElement("span");
+  newAssignmentIconElement.className = "fa fa-plus-square fa-2x floatIcons";
+  
+  var resetIconElement = document.createElement("span");
+  resetIconElement.className = "fa fa-refresh fa-2x floatIcons";
+    
+  var saveIconElement = document.createElement("span");
+  saveIconElement.className = "fa fa-save fa-2x floatIcons";
+  
+  floatButtonsDiv.appendChild(newAssignmentIconElement);
+  floatButtonsDiv.appendChild(resetIconElement);
+  floatButtonsDiv.appendChild(saveIconElement);
+  
+  document.body.appendChild(floatButtonsDiv);
 }
 
 /* get message from page action (from SCStreamModifier)

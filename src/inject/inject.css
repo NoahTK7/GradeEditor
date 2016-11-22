@@ -4,3 +4,38 @@
 }
 */
 
+.fa {
+  padding-right: .3em;
+}
+
+.editIconsContainer {
+  text-align: center;
+  padding: 10px;
+}
+
+.editIcons {
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+body {
+max-width: 1088px !important;
+}
+
+.fa-times {
+  color: #cc0000;
+}
+
+.floatButtonsDiv {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  width: auto;
+  background-color: #fff;
+  border: 2px solid #888;
+  border-radius: 2px;
+}
+
+.floatIcons {
+  padding: 8px;
+}
