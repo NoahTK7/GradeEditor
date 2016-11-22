@@ -7,7 +7,7 @@ chrome.runtime.onInstalled.addListener(function() {
       {        
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { urlContains: 'https://pinnacle.polk-fl.net/Pinnacle/Gradebook/InternetViewer/GradeSummary.aspx' },
+            pageUrl: { urlContains: 'https://pinnacle.polk-fl.net/Pinnacle/Gradebook/InternetViewer/StudentAssignments.aspx' },
           })
         ],
         // And shows the extension's page action.
@@ -21,7 +21,7 @@ chrome.runtime.onInstalled.addListener(function() {
 chrome.tabs.onUpdated.addListener(function(tab) {
   
   console.log(tab.url);
-  if (tab.url == "https://pinnacle.polk-fl.net/Pinnacle/Gradebook/InternetViewer/GradeSummary.aspx") {
+  if (tab.url == "https://pinnacle.polk-fl.net/Pinnacle/Gradebook/InternetViewer/StudentAssignments.aspx") {
    
     chrome.runtime.sendMessage("create");
    
