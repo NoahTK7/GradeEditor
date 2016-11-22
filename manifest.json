@@ -3,18 +3,18 @@
   "version": "1.0",
   "description": "Allows the Pinnacle grade book to be temporarily modified.",
   "background": {
-    "scripts": ["js/background.js"],
+    "scripts": ["src/background/background.js"],
     "persistent": false
   },
   "page_action" :
   {
     "default_icon" : "assets/icons/icon-19.png",
-    "default_title" : "Grade Editor Active"
+    "default_title" : "Grade Editor Active",
+    "default_popup": "src/page_action/page_action.html"
   },
   "permissions" : [
     "declarativeContent",
-    "tabs",
-    "declarativeContent"
+    "tabs"
   ],
   "icons" : {
     "48" : "assets/icons/icon-48.png",
@@ -22,9 +22,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://pinnacle.polk-fl.net/Pinnacle/Gradebook/InternetViewer/GradeSummary.aspx"],
-      "css": ["css/inject/inject.css"],
-      "js": ["assets/libs/jquery-3.1.1.min.js", "js/inject/inject.js"]
+      "matches": ["https://pinnacle.polk-fl.net/Pinnacle/Gradebook/InternetViewer/GradeSummary.aspx*"],
+      "css": ["src/inject/inject.css"],
+      "js": ["assets/libs/jquery-3.1.1.min.js", "src/inject/inject.js"]
     }
   ],
   "manifest_version": 2
