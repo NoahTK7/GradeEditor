@@ -24,8 +24,11 @@
     {
       "matches": ["https://pinnacle.polk-fl.net/Pinnacle/Gradebook/InternetViewer/StudentAssignments.aspx*"],
       "css": ["src/inject/inject.css"],
-      "js": ["assets/libs/jquery-3.1.1.min.js", "src/inject/inject.js"]
+      "js": ["src/inject/inject.js"]
     }
+  ],
+  "web_accessible_resources": [
+    "assets/libs/*"
   ],
   "manifest_version": 2
 }
