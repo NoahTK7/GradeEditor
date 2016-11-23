@@ -106,7 +106,7 @@ jQuery("document").ready(function(){
     //save real assignment info to storage
     //modal to edit
 
-    var assignment = new Assignment($(this).parents("[data-assignment]"));
+    var assignment = new Assignment($(this).parents("[data-assignment]").removeClass("hover"));
 
     //make reset icon visible (move to confirmation in modal)
     assignment.element.find(".resetIconAssignment").removeClass("hiddenIcon");
@@ -116,6 +116,33 @@ jQuery("document").ready(function(){
 
     //assignment.element.clone().appendTo(assignment.element.parent());
 
+    //$(window).trigger(customStateEvent);
+
+    console.log(assignment.element);
+
+  });
+
+  $( ".deleteIconAssignment" ).on("click", function(eventObj){
+    //eventObj.preventDefault();
+    console.log(consolePrefix + "Delete Assignment");
+
+    //var assignment = new Assignment($(this).parents("[data-assignment]").removeClass("hover"));
+
+    var assignments = $(this).parents("[data-assignment]").parent().children()
+
+    var assignmentIDs = [];
+    for (var i = 0; i < assignments.length; i++){
+      assignmentIDs[i] = $(assignments[i]).attr("id");
+    }
+    
+    console.log(assignmentIDs);
+    chrome.storage.local.set({"originalAssignments": assignmentIDs}, function(){
+      console.log(consolePrefix + "success");
+    });
+
+    chrome.storage.local.get(["originalAssignments"], function(data){
+      console.log(data);
+    });
     /*
       $(document).ready(function(){
         var x;
@@ -127,16 +154,6 @@ jQuery("document").ready(function(){
         });
       });
      */
-
-    //$(window).trigger(customStateEvent);
-
-    console.log(assignment.element);
-
-  });
-
-  $( ".deleteIconAssignment" ).on("click", function(eventObj){
-    //eventObj.preventDefault();
-    console.log(consolePrefix + "Delete Assignment");
     
   });
 
