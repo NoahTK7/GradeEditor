@@ -55,6 +55,7 @@ function addButtons(){
     editIconElement.className = "fa fa-pencil fa-lg modifyIcons editIconAssignment";
     var aEditIconElement = document.createElement("a");
     aEditIconElement.className = "aModifyIcons";
+    aEditIconElement.href = "#";
     aEditIconElement.appendChild(editIconElement);
     editElement.appendChild(aEditIconElement);
     
@@ -62,6 +63,7 @@ function addButtons(){
     deleteIconElement.className = "fa fa-times fa-lg modifyIcons deleteIconAssignment";
     var aDeleteIconElement = document.createElement("a");
     aDeleteIconElement.className = "aModifyIcons";
+    aDeleteIconElement.href = "#";
     aDeleteIconElement.appendChild(deleteIconElement);
     editElement.appendChild(aDeleteIconElement);
 
@@ -69,6 +71,7 @@ function addButtons(){
     resetIconElement.className = "fa fa-refresh fa-lg modifyIcons resetIconAssignment hiddenIcon";
     var aResetIconElement = document.createElement("a");
     aResetIconElement.className = "aModifyIcons";
+    aResetIconElement.href = "#";
     aResetIconElement.appendChild(resetIconElement);
     editElement.appendChild(aResetIconElement);
     
@@ -77,17 +80,20 @@ function addButtons(){
   
   var floatButtonsDiv = document.createElement("div");
   floatButtonsDiv.className = "floatButtonsDiv";
-  
+
   var newAssignmentIconElement = document.createElement("span");
-  newAssignmentIconElement.className = "fa fa-plus-square fa-2x floatIcons";
-  
+  newAssignmentIconElement.className = "fa fa-plus-square fa-2x floatIcons newIconFloat activeIcon";
+  var aNewAssignmentIconElement = document.createElement("a");
+  aNewAssignmentIconElement.href = "#";
+  aNewAssignmentIconElement.appendChild(newAssignmentIconElement);
+
   var resetIconElement = document.createElement("span");
-  resetIconElement.className = "fa fa-refresh fa-2x floatIcons";
+  resetIconElement.className = "fa fa-refresh fa-2x floatIcons resetIconFloat";
     
   var saveIconElement = document.createElement("span");
-  saveIconElement.className = "fa fa-save fa-2x floatIcons";
+  saveIconElement.className = "fa fa-save fa-2x floatIcons saveIconFloat";
   
-  floatButtonsDiv.appendChild(newAssignmentIconElement);
+  floatButtonsDiv.appendChild(aNewAssignmentIconElement);
   floatButtonsDiv.appendChild(resetIconElement);
   floatButtonsDiv.appendChild(saveIconElement);
   
@@ -95,27 +101,58 @@ function addButtons(){
 }
 
 jQuery("document").ready(function(){
-  $( ".editIconAssignment" ).on("click", function(){
-    //e.preventDefault();
+  //var customStateEvent = $.Event("customstate");
+
+  $( ".editIconAssignment" ).on("click", function(eventObj){
+    eventObj.preventDefault();
     console.log(consolePrefix + "Edit Assignment");
     //save real assignment info to storage
     //modal to edit
 
     var assignment = new Assignment($(this).parents("[data-assignment]"));
 
-    //make reset icon visible
+    //make reset icon visible (move to confirmation in modal)
     assignment.element.find(".resetIconAssignment").removeClass("hiddenIcon");
 
     //make float buttons active (dispatch event? handler changes color, clickable)
+    $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
+
+    //$(window).trigger(customStateEvent);
 
     console.log(assignment.element);
 
   });
-  $( ".deleteIconAssignment" ).on("click", function(e){
-    //e.preventDefault();
+
+  $( ".deleteIconAssignment" ).on("click", function(eventObj){
+    eventObj.preventDefault();
     console.log(consolePrefix + "Delete Assignment");
-    //
-  })
+    
+  });
+
+  $( ".resetIconAssignment" ).on("click", function(eventObj){
+    eventObj.preventDefault();
+    console.log(consolePrefix + "Reset Assignment");
+    
+  });
+
+  $( ".newIconFloat" ).on("click", function(eventObj){
+    eventObj.preventDefault();
+    console.log(consolePrefix + "New Assignment");
+    
+  });
+
+  $( ".resetIconFloat" ).on("click", function(eventObj){
+    eventObj.preventDefault();
+    console.log(consolePrefix + "Reset Changes");
+    
+  });
+
+  $( ".saveIconFloat" ).on("click", function(eventObj){
+    eventObj.preventDefault();
+    console.log(consolePrefix + "Save Changes");
+    
+  });
+
 });
 
 function Assignment(element) {
