@@ -13,7 +13,7 @@
   padding: 10px;
 }
 
-.editIcons {
+.modifyIcons {
   padding-bottom: 15px;
   padding-top: 15px;
 }
@@ -31,11 +31,20 @@ max-width: 1088px !important;
   top: 5px;
   right: 5px;
   width: auto;
-  background-color: #fff;
+  background-color: #ebebeb;
   border: 2px solid #888;
   border-radius: 2px;
+  color: #aaa;
 }
 
 .floatIcons {
   padding: 8px;
+}
+
+.activeIcon {
+  color: #2e7ec0;
+}
+
+.hiddenIcon {
+  display: none !important;
 }

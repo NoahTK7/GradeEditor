@@ -1,3 +1,5 @@
+var consolePrefix = "[GradeEditor] ";
+
 chrome.extension.sendMessage({}, function(response) {
   var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
@@ -5,7 +7,7 @@ chrome.extension.sendMessage({}, function(response) {
 
 		// ----------------------------------------------------------
 		// This part of the script triggers when page is done loading
-		console.log("[GradeEditor] Script successfully injected.");
+		console.log(consolePrefix + "Script successfully injected.");
 		// ----------------------------------------------------------
 
     // dependencies
@@ -16,22 +18,22 @@ chrome.extension.sendMessage({}, function(response) {
       fontawesome.rel = 'stylesheet';
       fontawesome.href = chrome.extension.getURL('assets/libs/font-awesome-4.7.0/css/font-awesome.min.css');
       
-      var jquery = document.createElement('script');
-      jquery.type = 'text/javascript';
-      jquery.src = chrome.extension.getURL('assets/libs/jquery-3.1.1.min.js');
+      //var jquery = document.createElement('script');
+      //jquery.type = 'text/javascript';
+      //jquery.src = chrome.extension.getURL('assets/libs/jquery-3.1.1.min.js');
       
       var jqueryUICSS = document.createElement('link');
       jqueryUICSS.rel = 'stylesheet';
       jqueryUICSS.href = chrome.extension.getURL('assets/libs/jquery-ui-1.12.1/jquery-ui.min.css');
       
-      var jqueryUIJS = document.createElement('script');
-      jqueryUIJS.type = 'text/javascript';
-      jqueryUIJS.src = chrome.extension.getURL('assets/libs/jquery-ui-1.12.1/jquery-ui.min.js');
+      //var jqueryUIJS = document.createElement('script');
+      //jqueryUIJS.type = 'text/javascript';
+      //jqueryUIJS.src = chrome.extension.getURL('assets/libs/jquery-ui-1.12.1/jquery-ui.min.js');
       
       head.appendChild(fontawesome);
-      head.appendChild(jquery);
+      //head.appendChild(jquery);
       head.appendChild(jqueryUICSS);
-      head.appendChild(jqueryUIJS);
+      //head.appendChild(jqueryUIJS);
     }
     
 		//do stuff?
@@ -50,12 +52,25 @@ function addButtons(){
     editElement.className = "editIconsContainer";
   
     var editIconElement = document.createElement("span");
-    editIconElement.className = "fa fa-pencil-square-o fa-lg editIcons";
-    editElement.appendChild(editIconElement);
+    editIconElement.className = "fa fa-pencil fa-lg modifyIcons editIconAssignment";
+    var aEditIconElement = document.createElement("a");
+    aEditIconElement.className = "aModifyIcons";
+    aEditIconElement.appendChild(editIconElement);
+    editElement.appendChild(aEditIconElement);
     
     var deleteIconElement = document.createElement("span");
-    deleteIconElement.className = "fa fa-times fa-lg editIcons";
-    editElement.appendChild(deleteIconElement);
+    deleteIconElement.className = "fa fa-times fa-lg modifyIcons deleteIconAssignment";
+    var aDeleteIconElement = document.createElement("a");
+    aDeleteIconElement.className = "aModifyIcons";
+    aDeleteIconElement.appendChild(deleteIconElement);
+    editElement.appendChild(aDeleteIconElement);
+
+    var resetIconElement = document.createElement("span");
+    resetIconElement.className = "fa fa-refresh fa-lg modifyIcons resetIconAssignment hiddenIcon";
+    var aResetIconElement = document.createElement("a");
+    aResetIconElement.className = "aModifyIcons";
+    aResetIconElement.appendChild(resetIconElement);
+    editElement.appendChild(aResetIconElement);
     
     assignments[i].appendChild(editElement);
   }
@@ -79,6 +94,34 @@ function addButtons(){
   document.body.appendChild(floatButtonsDiv);
 }
 
+jQuery("document").ready(function(){
+  $( ".editIconAssignment" ).on("click", function(){
+    //e.preventDefault();
+    console.log(consolePrefix + "Edit Assignment");
+    //save real assignment info to storage
+    //modal to edit
+
+    var assignment = new Assignment($(this).parents("[data-assignment]"));
+
+    //make reset icon visible
+    assignment.element.find(".resetIconAssignment").removeClass("hiddenIcon");
+
+    //make float buttons active (dispatch event? handler changes color, clickable)
+
+    console.log(assignment.element);
+
+  });
+  $( ".deleteIconAssignment" ).on("click", function(e){
+    //e.preventDefault();
+    console.log(consolePrefix + "Delete Assignment");
+    //
+  })
+});
+
+function Assignment(element) {
+  this.element = element;
+  this.ID = element.attr("data-assignment");
+}
 /* get message from page action (from SCStreamModifier)
 chrome.runtime.onMessage.addListener(
 	function (request, sender, sendResponse) {
