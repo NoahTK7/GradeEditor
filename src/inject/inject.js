@@ -55,7 +55,6 @@ function addButtons(){
     editIconElement.className = "fa fa-pencil fa-lg modifyIcons editIconAssignment";
     var aEditIconElement = document.createElement("a");
     aEditIconElement.className = "aModifyIcons";
-    aEditIconElement.href = "#";
     aEditIconElement.appendChild(editIconElement);
     editElement.appendChild(aEditIconElement);
     
@@ -63,7 +62,6 @@ function addButtons(){
     deleteIconElement.className = "fa fa-times fa-lg modifyIcons deleteIconAssignment";
     var aDeleteIconElement = document.createElement("a");
     aDeleteIconElement.className = "aModifyIcons";
-    aDeleteIconElement.href = "#";
     aDeleteIconElement.appendChild(deleteIconElement);
     editElement.appendChild(aDeleteIconElement);
 
@@ -71,7 +69,6 @@ function addButtons(){
     resetIconElement.className = "fa fa-refresh fa-lg modifyIcons resetIconAssignment hiddenIcon";
     var aResetIconElement = document.createElement("a");
     aResetIconElement.className = "aModifyIcons";
-    aResetIconElement.href = "#";
     aResetIconElement.appendChild(resetIconElement);
     editElement.appendChild(aResetIconElement);
     
@@ -104,7 +101,7 @@ jQuery("document").ready(function(){
   //var customStateEvent = $.Event("customstate");
 
   $( ".editIconAssignment" ).on("click", function(eventObj){
-    eventObj.preventDefault();
+    //eventObj.preventDefault();
     console.log(consolePrefix + "Edit Assignment");
     //save real assignment info to storage
     //modal to edit
@@ -117,6 +114,20 @@ jQuery("document").ready(function(){
     //make float buttons active (dispatch event? handler changes color, clickable)
     $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
 
+    //assignment.element.clone().appendTo(assignment.element.parent());
+
+    /*
+      $(document).ready(function(){
+        var x;
+        $("#btn1").click(function(){
+          x = $("p").detach();
+        });
+        $("#btn2").click(function(){
+          $("body").prepend(x);
+        });
+      });
+     */
+
     //$(window).trigger(customStateEvent);
 
     console.log(assignment.element);
@@ -124,13 +135,13 @@ jQuery("document").ready(function(){
   });
 
   $( ".deleteIconAssignment" ).on("click", function(eventObj){
-    eventObj.preventDefault();
+    //eventObj.preventDefault();
     console.log(consolePrefix + "Delete Assignment");
     
   });
 
   $( ".resetIconAssignment" ).on("click", function(eventObj){
-    eventObj.preventDefault();
+    //eventObj.preventDefault();
     console.log(consolePrefix + "Reset Assignment");
     
   });
