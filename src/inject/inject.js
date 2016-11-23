@@ -20,10 +20,19 @@ chrome.extension.sendMessage({}, function(response) {
       jquery.type = 'text/javascript';
       jquery.src = chrome.extension.getURL('assets/libs/jquery-3.1.1.min.js');
       
+      var jqueryUICSS = document.createElement('link');
+      jqueryUICSS.rel = 'stylesheet';
+      jqueryUICSS.href = chrome.extension.getURL('assets/libs/jquery-ui-1.12.1/jquery-ui.min.css');
+      
+      var jqueryUIJS = document.createElement('script');
+      jqueryUIJS.type = 'text/javascript';
+      jqueryUIJS.src = chrome.extension.getURL('assets/libs/jquery-ui-1.12.1/jquery-ui.min.js');
+      
       head.appendChild(fontawesome);
       head.appendChild(jquery);
+      head.appendChild(jqueryUICSS);
+      head.appendChild(jqueryUIJS);
     }
-    // document.write("<script src='https://use.fontawesome.com/c01af75451.js'></script><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>");
     
 		//do stuff?
     addButtons();

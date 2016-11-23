@@ -14,7 +14,8 @@
   },
   "permissions" : [
     "declarativeContent",
-    "tabs"
+    "tabs",
+    "storage"
   ],
   "icons" : {
     "48" : "assets/icons/icon-48.png",
