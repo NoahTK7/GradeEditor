@@ -18,22 +18,12 @@ chrome.extension.sendMessage({}, function(response) {
       fontawesome.rel = 'stylesheet';
       fontawesome.href = chrome.extension.getURL('assets/libs/font-awesome-4.7.0/css/font-awesome.min.css');
       
-      //var jquery = document.createElement('script');
-      //jquery.type = 'text/javascript';
-      //jquery.src = chrome.extension.getURL('assets/libs/jquery-3.1.1.min.js');
-      
       var jqueryUICSS = document.createElement('link');
       jqueryUICSS.rel = 'stylesheet';
       jqueryUICSS.href = chrome.extension.getURL('assets/libs/jquery-ui-1.12.1/jquery-ui.min.css');
       
-      //var jqueryUIJS = document.createElement('script');
-      //jqueryUIJS.type = 'text/javascript';
-      //jqueryUIJS.src = chrome.extension.getURL('assets/libs/jquery-ui-1.12.1/jquery-ui.min.js');
-      
       head.appendChild(fontawesome);
-      //head.appendChild(jquery);
       head.appendChild(jqueryUICSS);
-      //head.appendChild(jqueryUIJS);
     }
     
 		//do stuff?
@@ -100,6 +90,14 @@ function addButtons(){
 jQuery("document").ready(function(){
   //var customStateEvent = $.Event("customstate");
 
+  var pageAssignments = [];
+  var assignments = $("[data-assignment]");
+
+  for (var i = 0; i < assignments.length; i++){
+    pageAssignments[i] = new Assignment(assignments[i]);
+  }
+
+  //event handling
   $( ".editIconAssignment" ).on("click", function(eventObj){
     //eventObj.preventDefault();
     console.log(consolePrefix + "Edit Assignment");
@@ -126,9 +124,8 @@ jQuery("document").ready(function(){
     //eventObj.preventDefault();
     console.log(consolePrefix + "Delete Assignment");
 
-    //var assignment = new Assignment($(this).parents("[data-assignment]").removeClass("hover"));
-
-    var assignments = $(this).parents("[data-assignment]").parent().children()
+    /*
+    var assignments = $(this).parents("[data-assignment]").parent().children();
 
     var assignmentIDs = [];
     for (var i = 0; i < assignments.length; i++){
@@ -143,6 +140,20 @@ jQuery("document").ready(function(){
     chrome.storage.local.get(["originalAssignments"], function(data){
       console.log(data);
     });
+    */
+
+    var thisID = $(this).parents("[data-assignment]").attr("data-assignment");
+
+    console.log(thisID);
+
+    pageAssignments.forEach(function(assignment){
+      console.log(assignment.ID);
+      if (assignment.ID == thisID) {
+        $(assignment.element).detach();
+        assignment.isRemoved = true;
+      };
+    })
+
     /*
       $(document).ready(function(){
         var x;
@@ -185,7 +196,8 @@ jQuery("document").ready(function(){
 
 function Assignment(element) {
   this.element = element;
-  this.ID = element.attr("data-assignment");
+  this.ID = jQuery(element).attr("data-assignment");
+  this.isRemoved  = false;
 }
 /* get message from page action (from SCStreamModifier)
 chrome.runtime.onMessage.addListener(
