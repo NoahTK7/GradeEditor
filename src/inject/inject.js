@@ -27,9 +27,20 @@ chrome.extension.sendMessage({}, function(response) {
       head.appendChild(fontawesome);
       head.appendChild(jqueryUICSS);
     }
-    
-		//do stuff?
-    addButtons();
+
+    var isActive = chrome.storage.local.get(["active"], function (data) {
+        if (data.active) {
+          //do stuff
+          addButtons();
+
+          //make loaded
+          chrome.storage.local.set({"loaded":true});
+        }
+    });
+
+        window.addEventListener("onbeforeunload", function (eventObj) {
+            chrome.storage.local.set({"loaded":false});
+        });
 
 	}
 	}, 10);
