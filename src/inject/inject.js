@@ -1,5 +1,7 @@
 var consolePrefix = "[GradeEditor] ";
 
+//TODO: save "active" and "loaded" states to local storage (for use with activating/deactivating by page action)
+
 chrome.extension.sendMessage({}, function(response) {
   var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
@@ -88,8 +90,6 @@ function addButtons(){
 }
 
 jQuery("document").ready(function(){
-  //var customStateEvent = $.Event("customstate");
-
   var pageAssignments = [];
   var assignments = $("[data-assignment]");
 
@@ -101,7 +101,6 @@ jQuery("document").ready(function(){
   $( ".editIconAssignment" ).on("click", function(eventObj){
     //eventObj.preventDefault();
     console.log(consolePrefix + "Edit Assignment");
-    //save real assignment info to storage
     //modal to edit
 
     var assignment = new Assignment($(this).parents("[data-assignment]").removeClass("hover"));
@@ -112,10 +111,6 @@ jQuery("document").ready(function(){
     //make float buttons active (dispatch event? handler changes color, clickable)
     $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
 
-    //assignment.element.clone().appendTo(assignment.element.parent());
-
-    //$(window).trigger(customStateEvent);
-
     console.log(assignment.element);
 
   });
@@ -123,24 +118,6 @@ jQuery("document").ready(function(){
   $( ".deleteIconAssignment" ).on("click", function(eventObj){
     //eventObj.preventDefault();
     console.log(consolePrefix + "Delete Assignment");
-
-    /*
-    var assignments = $(this).parents("[data-assignment]").parent().children();
-
-    var assignmentIDs = [];
-    for (var i = 0; i < assignments.length; i++){
-      assignmentIDs[i] = $(assignments[i]).attr("id");
-    }
-    
-    console.log(assignmentIDs);
-    chrome.storage.local.set({"originalAssignments": assignmentIDs}, function(){
-      console.log(consolePrefix + "success");
-    });
-
-    chrome.storage.local.get(["originalAssignments"], function(data){
-      console.log(data);
-    });
-    */
 
     var thisID = $(this).parents("[data-assignment]").attr("data-assignment");
 
@@ -152,20 +129,7 @@ jQuery("document").ready(function(){
         $(assignment.element).detach();
         assignment.isRemoved = true;
       };
-    })
-
-    /*
-      $(document).ready(function(){
-        var x;
-        $("#btn1").click(function(){
-          x = $("p").detach();
-        });
-        $("#btn2").click(function(){
-          $("body").prepend(x);
-        });
-      });
-     */
-    
+    });
   });
 
   $( ".resetIconAssignment" ).on("click", function(eventObj){
@@ -183,6 +147,15 @@ jQuery("document").ready(function(){
   $( ".resetIconFloat" ).on("click", function(eventObj){
     eventObj.preventDefault();
     console.log(consolePrefix + "Reset Changes");
+
+    $("table#Assignments tbody").empty();
+    pageAssignments.forEach(function(assignment){
+      //element stored at load is updated, make and store copy for restoration? (useful bc elements will be modified)
+      $(assignment.element).removeClass("hover");
+      $("table#Assignments tbody").append(assignment.element);
+    });
+
+    //deactivate reset (and save) button
     
   });
 
@@ -199,6 +172,7 @@ function Assignment(element) {
   this.ID = jQuery(element).attr("data-assignment");
   this.isRemoved  = false;
 }
+
 /* get message from page action (from SCStreamModifier)
 chrome.runtime.onMessage.addListener(
 	function (request, sender, sendResponse) {
