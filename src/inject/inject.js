@@ -37,10 +37,13 @@ chrome.extension.sendMessage({}, function(response) {
           chrome.storage.local.set({"loaded":true});
         }
     });
-
+	
+	//unload when tab closed
         window.addEventListener("onbeforeunload", function (eventObj) {
             chrome.storage.local.set({"loaded":false});
         });
+
+	//TODO: receive message from page action to unload
 
 	}
 	}, 10);
