@@ -35,6 +35,9 @@ chrome.extension.sendMessage({}, function(response) {
 
           //make loaded
           chrome.storage.local.set({"loaded":true});
+
+          var loadedEvent = new CustomEvent("gradeeditorloaded");
+          window.dispatchEvent(loadedEvent);
         }
     });
 	
@@ -90,20 +93,20 @@ function addButtons(){
   aNewAssignmentIconElement.href = "#";
   aNewAssignmentIconElement.appendChild(newAssignmentIconElement);
 
-  var resetIconElement = document.createElement("span");
-  resetIconElement.className = "fa fa-refresh fa-2x floatIcons resetIconFloat";
+  var resetIconFloatElement = document.createElement("span");
+  resetIconFloatElement.className = "fa fa-refresh fa-2x floatIcons resetIconFloat";
     
   var saveIconElement = document.createElement("span");
   saveIconElement.className = "fa fa-save fa-2x floatIcons saveIconFloat";
   
   floatButtonsDiv.appendChild(aNewAssignmentIconElement);
-  floatButtonsDiv.appendChild(resetIconElement);
+  floatButtonsDiv.appendChild(resetIconFloatElement);
   floatButtonsDiv.appendChild(saveIconElement);
   
   document.body.appendChild(floatButtonsDiv);
 }
 
-jQuery("document").ready(function(){
+jQuery(window).on("gradeeditorloaded", function(){
   var pageAssignments = [];
   var assignments = $("[data-assignment]");
 
