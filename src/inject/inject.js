@@ -27,26 +27,43 @@ chrome.extension.sendMessage({}, function(response) {
     }
 
     chrome.storage.local.get(["active"], function (data) {
-        if (data.active) {
-          //do stuff
-          addButtons();
-
-          var loadedEvent = new CustomEvent("gradeeditorloaded");
-          window.dispatchEvent(loadedEvent);
-
-          //make loaded
-          chrome.storage.local.set({"loaded":true});
-        }
+      if (data.active) {
+        load();
+      }
     });
-	
-	//unload when tab closed
-        window.addEventListener("onbeforeunload", function (eventObj) {
-            chrome.storage.local.set({"loaded":false});
-        });
-
-	}
-	}, 10);
+  }
+}, 10);
 });
+
+function load(){
+  //add buttons, init event handlers (set loaded)
+  
+  addButtons();
+
+  //init jquery event handlers
+  var loadedEvent = new CustomEvent("gradeeditorloaded");
+  window.dispatchEvent(loadedEvent);
+
+  //make status loaded
+  chrome.storage.local.set({"loaded":true});
+
+  //unload when tab closed
+  window.addEventListener("onbeforeunload", function (eventObj) {
+    chrome.storage.local.set({"loaded":false});
+  });
+
+}
+
+function unload(){
+  //remove elements
+    //use remove() to remove event handlers
+  //set not loaded
+
+  removeComponents();
+
+  chrome.storage.local.set({"loaded":false});
+
+}
 
 function addButtons(){
   
@@ -102,6 +119,12 @@ function addButtons(){
   document.body.appendChild(floatButtonsDiv);
 }
 
+function removeComponents(){
+
+
+
+}
+
 jQuery(window).on("gradeeditorloaded", function(){
   var pageAssignments = [];
   var assignments = $("[data-assignment]");
@@ -121,12 +144,20 @@ jQuery(window).on("gradeeditorloaded", function(){
     //make reset icon visible (move to confirmation in modal)
     assignment.element.find(".resetIconAssignment").removeClass("hiddenIcon");
 
-    //make float buttons active (dispatch event? handler changes color, clickable)
-    $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
+    //make float buttons active
+    makeFloatsActive();
 
     console.log(assignment.element);
 
   });
+
+  function makeFloatsActive(){
+
+    if (!($(".resetIconFloat").hasClass("activeIcon"))){
+      $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
+    }
+
+  }
 
   $( ".deleteIconAssignment" ).on("click", function(eventObj){
     //eventObj.preventDefault();
@@ -143,6 +174,8 @@ jQuery(window).on("gradeeditorloaded", function(){
         assignment.isRemoved = true;
       };
     });
+
+    makeFloatsActive();
   });
 
   $( ".resetIconAssignment" ).on("click", function(eventObj){
@@ -193,7 +226,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     console.log(consolePrefix+"activate");
 
-    //add buttons, init event handlers (set loaded)
+    load();
 
     sendResponse({callback: "success"});
     return;
@@ -202,9 +235,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     console.log(consolePrefix+"deactivate");
 
-    //remove elements
-      //use remove() to remove event handlers
-    //set not loaded
+    unload();
 
     sendResponse({callback: "success"});
     return;
@@ -214,23 +245,3 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
  sendResponse({callback:"failure"});
 
 });
-
-/* get message from page action (from SCStreamModifier)
-chrome.runtime.onMessage.addListener(
-	function (request, sender, sendResponse) {
-		
-		if (request.event == "showall") {
-
-			console.log("[SCStreamModifier] Show All event");
-			sendResponse({callback: "success"});
-
-			return;
-
-		}
-
-		sendResponse({callback:"failure"});
-
-	}
-
-);
-*/
