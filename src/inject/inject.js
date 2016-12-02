@@ -1,5 +1,7 @@
 var consolePrefix = "[GradeEditor] ";
 
+var geInitHandlersEvent = new CustomEvent("geinithandlers");
+
 chrome.extension.sendMessage({}, function(response) {
   var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
@@ -41,8 +43,8 @@ function load(){
   addButtons();
 
   //init jquery event handlers
-  var loadedEvent = new CustomEvent("gradeeditorloaded");
-  window.dispatchEvent(loadedEvent);
+  //window.dispatchEvent(geInitHandlersEvent);
+  attachEventHandlers();
 
   //make status loaded
   chrome.storage.local.set({"loaded":true});
@@ -126,16 +128,19 @@ function removeComponents(){
 
 }
 
-jQuery(window).on("gradeeditorloaded", function(){
-  var pageAssignments = [];
-  var assignments = $("[data-assignment]");
+function attachEventHandlers() {
+  jQuery(function(){
+    var pageAssignments = [];
+    var pageAssignmentsCopy = [];
+    var assignments = $("[data-assignment]");
 
-  for (var i = 0; i < assignments.length; i++){
-    pageAssignments[i] = new Assignment(assignments[i]);
-  }
+    for (var i = 0; i < assignments.length; i++){
+      pageAssignments[i] = new Assignment(assignments[i]);
+      pageAssignmentsCopy[i] = new Assignment($(assignments[i]).clone());
+    }
 
-  //event handling
-  $( ".editIconAssignment" ).on("click", function(eventObj){
+    //event handling
+    $( ".editIconAssignment" ).on("click", function(eventObj){
     //eventObj.preventDefault();
     console.log(consolePrefix + "Edit Assignment");
     //modal to edit
@@ -152,23 +157,19 @@ jQuery(window).on("gradeeditorloaded", function(){
 
   });
 
-  function makeFloatsActive(){
-
-    if (!($(".resetIconFloat").hasClass("activeIcon"))){
-      $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
+    function makeFloatsActive(){
+      if (!($(".resetIconFloat").hasClass("activeIcon"))){
+        $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
+      }
     }
 
-  }
-
-  function makeFloatsInactive(){
-
-    if (($(".resetIconFloat").hasClass("activeIcon"))){
-      $(".resetIconFloat,.saveIconFloat").removeClass("activeIcon").unwrap();
+    function makeFloatsInactive(){
+      if (($(".resetIconFloat").hasClass("activeIcon"))){
+        $(".resetIconFloat,.saveIconFloat").removeClass("activeIcon").unwrap();
+      }
     }
 
-  }
-
-  $( ".deleteIconAssignment" ).on("click", function(eventObj){
+    $( ".deleteIconAssignment" ).on("click", function(eventObj){
     //eventObj.preventDefault();
     console.log(consolePrefix + "Delete Assignment");
 
@@ -177,7 +178,7 @@ jQuery(window).on("gradeeditorloaded", function(){
     console.log(thisID);
 
     pageAssignments.forEach(function(assignment){
-      console.log(assignment.ID);
+      //console.log(assignment.ID);
       if (assignment.ID == thisID) {
         $(assignment.element).detach();
         assignment.isRemoved = true;
@@ -187,44 +188,49 @@ jQuery(window).on("gradeeditorloaded", function(){
     makeFloatsActive();
   });
 
-  $( ".resetIconAssignment" ).on("click", function(eventObj){
+    $( ".resetIconAssignment" ).on("click", function(eventObj){
     //eventObj.preventDefault();
     console.log(consolePrefix + "Reset Assignment");
     
   });
 
-  $( ".newIconFloat" ).on("click", function(eventObj){
-    eventObj.preventDefault();
-    console.log(consolePrefix + "New Assignment");
-    
-  });
+    $( ".newIconFloat" ).on("click", function(eventObj){
+      eventObj.preventDefault();
+      console.log(consolePrefix + "New Assignment");
 
-  $( ".resetIconFloat" ).on("click", function(eventObj){
-    eventObj.preventDefault();
-    console.log(consolePrefix + "Reset Changes");
-
-    $("table#Assignments tbody").empty();
-    pageAssignments.forEach(function(assignment){
-      //element stored at load is updated, make and store copy for restoration? (useful bc elements will be modified)
-      $(assignment.element).removeClass("hover");
-      $("table#Assignments tbody").append(assignment.element);
     });
+
+    $( ".resetIconFloat" ).on("click", function(eventObj){
+      eventObj.preventDefault();
+      console.log(consolePrefix + "Reset Changes");
+
+      $("table#Assignments tbody").empty();
+      pageAssignmentsCopy.forEach(function(assignment){
+
+        //element stored at load is updated, make and store copy for restoration? (useful bc elements will be modified)
+        $("table#Assignments tbody").append(assignment.element);
+
+        //reattach event handlers
+        attachEventHandlers();
+      });
 
     //deactivate reset (and save) button
     makeFloatsInactive();
     
   });
 
-  $( ".saveIconFloat" ).on("click", function(eventObj){
-    eventObj.preventDefault();
-    console.log(consolePrefix + "Save Changes");
-    
+    $( ".saveIconFloat" ).on("click", function(eventObj){
+      eventObj.preventDefault();
+      console.log(consolePrefix + "Save Changes");
+
     //save functionality
 
     makeFloatsInactive();
   });
 
-});
+  });
+}
+
 
 function Assignment(element) {
   this.element = element;
