@@ -44,8 +44,6 @@ chrome.extension.sendMessage({}, function(response) {
             chrome.storage.local.set({"loaded":false});
         });
 
-	//TODO: receive message from page action to unload
-
 	}
 	}, 10);
 });
