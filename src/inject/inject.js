@@ -121,7 +121,8 @@ function addButtons(){
 
 function removeComponents(){
 
-
+  jQuery(".editIconsContainer").remove();
+  jQuery(".floatButtonsDiv").remove();
 
 }
 
@@ -155,6 +156,14 @@ jQuery(window).on("gradeeditorloaded", function(){
 
     if (!($(".resetIconFloat").hasClass("activeIcon"))){
       $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
+    }
+
+  }
+
+  function makeFloatsInactive(){
+
+    if (($(".resetIconFloat").hasClass("activeIcon"))){
+      $(".resetIconFloat,.saveIconFloat").removeClass("activeIcon").unwrap();
     }
 
   }
@@ -202,6 +211,7 @@ jQuery(window).on("gradeeditorloaded", function(){
     });
 
     //deactivate reset (and save) button
+    makeFloatsInactive();
     
   });
 
@@ -209,6 +219,9 @@ jQuery(window).on("gradeeditorloaded", function(){
     eventObj.preventDefault();
     console.log(consolePrefix + "Save Changes");
     
+    //save functionality
+
+    makeFloatsInactive();
   });
 
 });
@@ -225,6 +238,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.event == "activate") {
 
     console.log(consolePrefix+"activate");
+
+    /*chrome.storage.local.get(["active"], function (data) {
+      if (data.active) {
+        load();
+      }
+    });*/
 
     load();
 

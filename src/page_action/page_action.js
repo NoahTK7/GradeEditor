@@ -38,13 +38,13 @@ function sendMessage(eventName) {
         chrome.tabs.sendMessage(tabs[0].id, {event: eventName}, function(response) {
             if (response.callback == "success"){
                 console.log("callback");
-                onResponse(eventName);
+                chrome.storage.local.set({"active":eventName == "activate"});
             }
         });
     });
 }
 
-function onResponse(eventName){
+/*function onResponse(eventName){
     //on success
     console.log("success");
 
@@ -53,17 +53,49 @@ function onResponse(eventName){
     chrome.storage.local.set({"active":doActivate});
 
     if (!doActivate) {
-        document.getElementById("active").style.display = "none";
-        document.getElementById("inactive").style.display = "inherit";
-    } else {
         document.getElementById("active").style.display = "inherit";
         document.getElementById("inactive").style.display = "none";
+    } else {
+        document.getElementById("active").style.display = "none";
+        document.getElementById("inactive").style.display = "inherit";
     }
 
     //reactivate button
     document.getElementById("deactivateButton").disabled = false;
     document.getElementById("activateButton").disabled = false;
-}
+}*/
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (key in changes) {
+      var storageChange = changes[key];
+
+      if (key == "active") {
+        if (storageChange.newValue) {
+            //activate
+
+            document.getElementById("active").style.display = "inherit";
+            document.getElementById("inactive").style.display = "none";
+
+        } else {
+            //deactivate
+
+            document.getElementById("active").style.display = "none";
+            document.getElementById("inactive").style.display = "inherit";
+        }
+
+        document.getElementById("deactivateButton").disabled = false;
+        document.getElementById("activateButton").disabled = false;
+
+      }
+
+      console.log('Storage key "%s" in namespace "%s" changed. ' +
+          'Old value was "%s", new value is "%s".',
+          key,
+          namespace,
+          storageChange.oldValue,
+          storageChange.newValue);
+    }
+});
 
 /*
 var showAllButton = document.getElementById("showAllButton");
