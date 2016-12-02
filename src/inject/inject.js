@@ -1,7 +1,5 @@
 var consolePrefix = "[GradeEditor] ";
 
-//TODO: save "active" and "loaded" states to local storage (for use with activating/deactivating by page action)
-
 chrome.extension.sendMessage({}, function(response) {
   var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
@@ -28,16 +26,16 @@ chrome.extension.sendMessage({}, function(response) {
       head.appendChild(jqueryUICSS);
     }
 
-    var isActive = chrome.storage.local.get(["active"], function (data) {
+    chrome.storage.local.get(["active"], function (data) {
         if (data.active) {
           //do stuff
           addButtons();
 
-          //make loaded
-          chrome.storage.local.set({"loaded":true});
-
           var loadedEvent = new CustomEvent("gradeeditorloaded");
           window.dispatchEvent(loadedEvent);
+
+          //make loaded
+          chrome.storage.local.set({"loaded":true});
         }
     });
 	
@@ -189,6 +187,35 @@ function Assignment(element) {
   this.ID = jQuery(element).attr("data-assignment");
   this.isRemoved  = false;
 }
+
+//recieve messages from page action
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+
+  if (request.event == "activate") {
+
+    console.log(consolePrefix+"activate");
+
+    //add buttons, init event handlers (set loaded)
+
+    sendResponse({callback: "success"});
+    return;
+
+  } else if (request.event == "deactivate") {
+
+    console.log(consolePrefix+"deactivate");
+
+    //remove elements
+      //use remove() to remove event handlers
+    //set not loaded
+
+    sendResponse({callback: "success"});
+    return;
+
+  }
+
+ sendResponse({callback:"failure"});
+
+});
 
 /* get message from page action (from SCStreamModifier)
 chrome.runtime.onMessage.addListener(

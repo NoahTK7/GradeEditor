@@ -6,15 +6,26 @@
 		width: 200px;
 		font-family: Helvetica, Ubuntu, Arial, sans-serif;
 	}
+	.green {
+		color: #30a429;
+	}
+	.red {
+		color: #ad2b20;
+	}
 </style>
 
 <script type="text/javascript" src="page_action.js"></script>
 
 <div id="mainPopup">
 	<h3>Grade Editor</h3>
-	<p>Grade Editor is currently active.</p>
-	<br/>
-	<!-- reset button?
-  <button id="showAllButton">Show All</button>
-  -->
+	<div id="active" class="status">
+		<p>Grade Editor is currently <span class="green">active</span>.</p>
+		<br/>
+		<button id="deactivateButton">Deactivate</button>
+	</div>
+	<div id="inactive" class="status">
+		<p>Grade Editor is currently <span class="red">inactive</span>.</p>
+		<br/>
+		<button id="activateButton">Activate</button>
+	</div>
 </div>
