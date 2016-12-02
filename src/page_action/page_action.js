@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function (event) {
     var activateButton = document.getElementById("activateButton");
     var deactivateButton = document.getElementById("deactivateButton");
 
@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("inactive").style.display = "none";
 
     chrome.storage.local.get(["active"], function (data) {
-        if(data.active){
+        if (data.active) {
             document.getElementById("active").style.display = "inherit";
         } else {
             document.getElementById("inactive").style.display = "inherit";
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     deactivateButton.onclick = deactivate;
 });
 
-function activate(){
+function activate() {
     //deactivate button
     document.getElementById("activateButton").disabled = true;
 
@@ -34,44 +34,44 @@ function deactivate() {
 }
 
 function sendMessage(eventName) {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {event: eventName}, function(response) {
-            if (response.callback == "success"){
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {event: eventName}, function (response) {
+            if (response.callback == "success") {
                 console.log("callback");
-                chrome.storage.local.set({"active":eventName == "activate"});
+                chrome.storage.local.set({"active": eventName == "activate"});
             }
         });
     });
 }
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
+chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (key in changes) {
-      var storageChange = changes[key];
+        var storageChange = changes[key];
 
-      if (key == "active") {
-        if (storageChange.newValue) {
-            //activate
+        if (key == "active") {
+            if (storageChange.newValue) {
+                //activate
 
-            document.getElementById("active").style.display = "inherit";
-            document.getElementById("inactive").style.display = "none";
+                document.getElementById("active").style.display = "inherit";
+                document.getElementById("inactive").style.display = "none";
 
-        } else {
-            //deactivate
+            } else {
+                //deactivate
 
-            document.getElementById("active").style.display = "none";
-            document.getElementById("inactive").style.display = "inherit";
+                document.getElementById("active").style.display = "none";
+                document.getElementById("inactive").style.display = "inherit";
+            }
+
+            document.getElementById("deactivateButton").disabled = false;
+            document.getElementById("activateButton").disabled = false;
+
         }
 
-        document.getElementById("deactivateButton").disabled = false;
-        document.getElementById("activateButton").disabled = false;
-
-      }
-
-      console.log('Storage key "%s" in namespace "%s" changed. ' +
-          'Old value was "%s", new value is "%s".',
-          key,
-          namespace,
-          storageChange.oldValue,
-          storageChange.newValue);
+        console.log('Storage key "%s" in namespace "%s" changed. ' +
+            'Old value was "%s", new value is "%s".',
+            key,
+            namespace,
+            storageChange.oldValue,
+            storageChange.newValue);
     }
 });

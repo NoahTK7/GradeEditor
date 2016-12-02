@@ -5,46 +5,46 @@
 */
 
 .fa {
-  padding-right: .3em;
+    padding-right: .3em;
 }
 
 .editIconsContainer {
-  text-align: center;
-  padding: 10px;
+    text-align: center;
+    padding: 10px;
 }
 
 .modifyIcons {
-  padding-bottom: 15px;
-  padding-top: 15px;
+    padding-bottom: 15px;
+    padding-top: 15px;
 }
 
 body {
-max-width: 1088px !important;
+    max-width: 1088px !important;
 }
 
 .fa-times {
-  color: #cc0000;
+    color: #cc0000;
 }
 
 .floatButtonsDiv {
-  position: fixed;
-  top: 5px;
-  right: 5px;
-  width: auto;
-  background-color: #ebebeb;
-  border: 2px solid #888;
-  border-radius: 2px;
-  color: #aaa;
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    width: auto;
+    background-color: #ebebeb;
+    border: 2px solid #888;
+    border-radius: 2px;
+    color: #aaa;
 }
 
 .floatIcons {
-  padding: 8px;
+    padding: 8px;
 }
 
 .activeIcon {
-  color: #2e7ec0;
+    color: #2e7ec0;
 }
 
 .hiddenIcon {
-  display: none !important;
+    display: none !important;
 }
