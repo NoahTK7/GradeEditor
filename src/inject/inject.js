@@ -1,6 +1,11 @@
+//float button have multiple event handlers attached after reset because handlers not removed with assignments
+//delete float buttons bc readded on reset
+
 var consolePrefix = "[GradeEditor] ";
 
-var geInitHandlersEvent = new CustomEvent("geinithandlers");
+var pageAssignments = [];
+var pageAssignmentsCopy = [];
+var assignments = $("[data-assignment]");
 
 chrome.extension.sendMessage({}, function(response) {
   var readyStateCheckInterval = setInterval(function() {
@@ -37,10 +42,19 @@ chrome.extension.sendMessage({}, function(response) {
 }, 10);
 });
 
+function setDefaultResources(){
+  for (var i = 0; i < assignments.length; i++){
+    pageAssignments[i] = new Assignment(assignments[i]);
+    pageAssignmentsCopy[i] = new Assignment($(assignments[i]).clone());
+  }
+}
+
 function load(){
   //add buttons, init event handlers (set loaded)
   
   addButtons();
+
+  setDefaultResources();
 
   //init jquery event handlers
   //window.dispatchEvent(geInitHandlersEvent);
@@ -129,17 +143,8 @@ function removeComponents(){
 }
 
 function attachEventHandlers() {
+  //event handling
   jQuery(function(){
-    var pageAssignments = [];
-    var pageAssignmentsCopy = [];
-    var assignments = $("[data-assignment]");
-
-    for (var i = 0; i < assignments.length; i++){
-      pageAssignments[i] = new Assignment(assignments[i]);
-      pageAssignmentsCopy[i] = new Assignment($(assignments[i]).clone());
-    }
-
-    //event handling
     $( ".editIconAssignment" ).on("click", function(eventObj){
     //eventObj.preventDefault();
     console.log(consolePrefix + "Edit Assignment");
@@ -180,7 +185,7 @@ function attachEventHandlers() {
     pageAssignments.forEach(function(assignment){
       //console.log(assignment.ID);
       if (assignment.ID == thisID) {
-        $(assignment.element).detach();
+        $(assignment.element).remove();
         assignment.isRemoved = true;
       };
     });
