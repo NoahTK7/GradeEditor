@@ -1,11 +1,13 @@
-//float button have multiple event handlers attached after reset because handlers not removed with assignments
-//delete float buttons bc readded on reset
+//two arrays of assignments in use
+//first - current used to delete
+//second (templates) - used to spawn new assignments (on page reset)
+//TODO: when new assignment elements created, overwrite first array as current
 
 var consolePrefix = "[GradeEditor] ";
 
-var pageAssignments = [];
-var pageAssignmentsCopy = [];
-var assignments = $("[data-assignment]");
+var currentPageAssignments = [];
+var pageAssignmentsTemplates = [];
+var defaultAssignments;
 
 chrome.extension.sendMessage({}, function (response) {
     var readyStateCheckInterval = setInterval(function () {
@@ -33,6 +35,8 @@ chrome.extension.sendMessage({}, function (response) {
                 head.appendChild(jqueryUICSS);
             }
 
+            defaultAssignments = $("[data-assignment]");
+
             chrome.storage.local.get(["active"], function (data) {
                 if (data.active) {
                     load();
@@ -43,9 +47,9 @@ chrome.extension.sendMessage({}, function (response) {
 });
 
 function setDefaultResources() {
-    for (var i = 0; i < assignments.length; i++) {
-        pageAssignments[i] = new Assignment(assignments[i]);
-        pageAssignmentsCopy[i] = new Assignment($(assignments[i]).clone());
+    for (var i = 0; i < defaultAssignments.length; i++) {
+        currentPageAssignments[i] = new Assignment(defaultAssignments[i]);
+        pageAssignmentsTemplates[i] = new Assignment($(defaultAssignments[i]).clone());
     }
 }
 
@@ -113,30 +117,26 @@ function addButtons() {
         assignments[i].appendChild(editElement);
     }
 
-    chrome.storage.local.get(["active"], function (data) {
-        if (!data.active) {
-            var floatButtonsDiv = document.createElement("div");
-            floatButtonsDiv.className = "floatButtonsDiv";
+    var floatButtonsDiv = document.createElement("div");
+    floatButtonsDiv.className = "floatButtonsDiv";
 
-            var newAssignmentIconElement = document.createElement("span");
-            newAssignmentIconElement.className = "fa fa-plus-square fa-2x floatIcons newIconFloat activeIcon";
-            var aNewAssignmentIconElement = document.createElement("a");
-            aNewAssignmentIconElement.href = "#";
-            aNewAssignmentIconElement.appendChild(newAssignmentIconElement);
+    var newAssignmentIconElement = document.createElement("span");
+    newAssignmentIconElement.className = "fa fa-plus-square fa-2x floatIcons newIconFloat activeIcon";
+    var aNewAssignmentIconElement = document.createElement("a");
+    aNewAssignmentIconElement.href = "#";
+    aNewAssignmentIconElement.appendChild(newAssignmentIconElement);
 
-            var resetIconFloatElement = document.createElement("span");
-            resetIconFloatElement.className = "fa fa-refresh fa-2x floatIcons resetIconFloat";
+    var resetIconFloatElement = document.createElement("span");
+    resetIconFloatElement.className = "fa fa-refresh fa-2x floatIcons resetIconFloat";
 
-            var saveIconElement = document.createElement("span");
-            saveIconElement.className = "fa fa-save fa-2x floatIcons saveIconFloat";
+    var saveIconElement = document.createElement("span");
+    saveIconElement.className = "fa fa-save fa-2x floatIcons saveIconFloat";
 
-            floatButtonsDiv.appendChild(aNewAssignmentIconElement);
-            floatButtonsDiv.appendChild(resetIconFloatElement);
-            floatButtonsDiv.appendChild(saveIconElement);
+    floatButtonsDiv.appendChild(aNewAssignmentIconElement);
+    floatButtonsDiv.appendChild(resetIconFloatElement);
+    floatButtonsDiv.appendChild(saveIconElement);
 
-            document.body.appendChild(floatButtonsDiv);
-        }
-    });
+    document.body.appendChild(floatButtonsDiv);
 }
 
 function removeComponents() {
@@ -169,12 +169,14 @@ function attachEventHandlers() {
         function makeFloatsActive() {
             if (!($(".resetIconFloat").hasClass("activeIcon"))) {
                 $(".resetIconFloat,.saveIconFloat").addClass("activeIcon").wrap("<a href='#'></a>");
+                $(".resetIconFloat").on("click", addResetEvent);
             }
         }
 
         function makeFloatsInactive() {
             if (($(".resetIconFloat").hasClass("activeIcon"))) {
                 $(".resetIconFloat,.saveIconFloat").removeClass("activeIcon").unwrap();
+                $(".resetIconFloat").off("click", addResetEvent);
             }
         }
 
@@ -186,13 +188,12 @@ function attachEventHandlers() {
 
             console.log(thisID);
 
-            pageAssignments.forEach(function (assignment) {
+            currentPageAssignments.forEach(function (assignment) {
                 //console.log(assignment.ID);
                 if (assignment.ID == thisID) {
                     $(assignment.element).remove();
                     assignment.isRemoved = true;
                 }
-                ;
             });
 
             makeFloatsActive();
@@ -204,42 +205,39 @@ function attachEventHandlers() {
 
         });
 
-        chrome.storage.local.get(["active"], function (data) {
-            if (!data.active) {
-                $(".newIconFloat").on("click", function (eventObj) {
-                    eventObj.preventDefault();
-                    console.log(consolePrefix + "New Assignment");
+        $(".newIconFloat").on("click", function (eventObj) {
+            eventObj.preventDefault();
+            console.log(consolePrefix + "New Assignment");
 
-                });
+        });
 
-                $(".resetIconFloat").on("click", function (eventObj) {
-                    eventObj.preventDefault();
-                    console.log(consolePrefix + "Reset Changes");
+        function addResetEvent(eventObj) {
+            eventObj.preventDefault();
+            console.log(consolePrefix + "Reset Changes");
 
-                    $("table#Assignments tbody").empty();
-                    pageAssignmentsCopy.forEach(function (assignment) {
+            $("table#Assignments tbody").empty();
+            pageAssignmentsTemplates.forEach(function (assignment) {
+                //element stored at load is updated, make and store copy for restoration? (useful bc elements will be modified)
+                $("table#Assignments tbody").append($(assignment.element));
+            });
 
-                        //element stored at load is updated, make and store copy for restoration? (useful bc elements will be modified)
-                        $("table#Assignments tbody").append(assignment.element);
+            removeComponents();
+            addButtons();
 
-                        //reattach event handlers
-                        attachEventHandlers();
-                    });
+            //reattach event handlers
+            attachEventHandlers();
 
-                    //deactivate reset (and save) button
-                    makeFloatsInactive();
+            //deactivate reset (and save) button
+            makeFloatsInactive();
+        }
 
-                });
+        $(".saveIconFloat").on("click", function (eventObj) {
+            eventObj.preventDefault();
+            console.log(consolePrefix + "Save Changes");
 
-                $(".saveIconFloat").on("click", function (eventObj) {
-                    eventObj.preventDefault();
-                    console.log(consolePrefix + "Save Changes");
+            //save functionality
 
-                    //save functionality
-
-                    makeFloatsInactive();
-                });
-            }
+            makeFloatsInactive();
         });
     });
 }
@@ -251,7 +249,7 @@ function Assignment(element) {
     this.isRemoved = false;
 }
 
-//recieve messages from page action
+//receive messages from page action
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     if (request.event == "activate") {
