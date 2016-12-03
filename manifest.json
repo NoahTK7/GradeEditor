@@ -1,6 +1,6 @@
 {
   "name": "Grade Editor",
-  "version": "1.0",
+  "version": "0.1.0",
   "description": "Allows the Pinnacle grade book to be temporarily modified.",
   "background": {
     "scripts": ["src/background/background.js"],
