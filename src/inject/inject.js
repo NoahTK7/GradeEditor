@@ -1,8 +1,3 @@
-//two arrays of assignments in use
-//first - current used to delete
-//second (templates) - used to spawn new assignments (on page reset)
-//TODO: when new assignment elements created, overwrite first array as current
-
 var consolePrefix = "[GradeEditor] ";
 
 var currentPageAssignments = [];
@@ -216,10 +211,12 @@ function attachEventHandlers() {
             console.log(consolePrefix + "Reset Changes");
 
             $("table#Assignments tbody").empty();
-            pageAssignmentsTemplates.forEach(function (assignment) {
+            for (var i = 0; i < pageAssignmentsTemplates.length; i++) {
                 //element stored at load is updated, make and store copy for restoration? (useful bc elements will be modified)
-                $("table#Assignments tbody").append($(assignment.element));
-            });
+                var copy = $(pageAssignmentsTemplates[i].element).clone();
+                $("table#Assignments tbody").append(copy);
+                currentPageAssignments[i] = new Assignment(copy);
+            }
 
             removeComponents();
             addButtons();
