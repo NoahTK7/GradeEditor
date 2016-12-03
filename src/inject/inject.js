@@ -56,7 +56,6 @@ function load() {
     setDefaultResources();
 
     //init jquery event handlers
-    //window.dispatchEvent(geInitHandlersEvent);
     attachEventHandlers();
 
     //make status loaded
@@ -252,12 +251,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.event == "activate") {
 
         console.log(consolePrefix + "activate");
-
-        /*chrome.storage.local.get(["active"], function (data) {
-         if (data.active) {
-         load();
-         }
-         });*/
 
         load();
 
