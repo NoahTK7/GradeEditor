@@ -1,7 +1,7 @@
 # GradeEditor
 A web browser extension for termporarily editing grades on the Pinnacle website.
 
-### outline of planned features
+#### outline of planned features
 - edit current assignments
 - delete current assignments
 - add new assignments
@@ -12,3 +12,7 @@ A web browser extension for termporarily editing grades on the Pinnacle website.
 - edit grade summary page
 
 - attendance?
+
+###TODO
+- edit modals
+- update grade to reflect edited assignments
