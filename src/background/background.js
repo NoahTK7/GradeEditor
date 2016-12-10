@@ -21,18 +21,6 @@ chrome.runtime.onInstalled.addListener(function () {
     });
 });
 
-/*
- chrome.tabs.onUpdated.addListener(function(tab) {
-
- console.log(tab.url);
- if (tab.url == "https://pinnacle.polk-fl.net/Pinnacle/Gradebook/InternetViewer/StudentAssignments.aspx") {
-
- chrome.runtime.sendMessage("create");
-
- }
- });
- */
-
 //from SCStreamNotifier
 //example of using a message handler from the inject scripts
 chrome.extension.onMessage.addListener(
