@@ -46,6 +46,7 @@ function setDefaultResources() {
         currentPageAssignments[i] = new Assignment(defaultAssignments[i]);
         pageAssignmentsTemplates[i] = new Assignment($(defaultAssignments[i]).clone());
     }
+    //default header grade value?
 }
 
 function load() {
@@ -217,6 +218,8 @@ function attachEventHandlers() {
                 currentPageAssignments[i] = new Assignment(copy);
             }
 
+            //update header grade value
+
             removeComponents();
             addButtons();
 
@@ -240,9 +243,26 @@ function attachEventHandlers() {
 
 
 function Assignment(element) {
+    var jElement = jQuery(element);
     this.element = element;
-    this.ID = jQuery(element).attr("data-assignment");
+
+    this.ID = jElement.attr("data-assignment");
     this.isRemoved = false;
+
+    var letterContents = jElement.find("div.letter").children().contents().text();
+    var pointsContents = jElement.find(".numeric");
+
+    //single letter of grade, undefined if none
+    this.letterGrade = letterContents.charAt(0);
+    //string of percentage followed by percent sign
+    this.percent = letterContents.substr(1);
+
+    //
+    this.pointsEarned = pointsContents.find(".points").text();
+    //
+    this.pointsPossible = pointsContents.find(".max").text();
+
+    console.log(this.letterGrade, this.pointsEarned, this.pointsPossible, this.percent);
 }
 
 //receive messages from page action
@@ -271,3 +291,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     sendResponse({callback: "failure"});
 
 });
+
+//grade colors
+// A (X): color:#007F00;background-color:#E6F2E6
+// B: color:#3F7F00;background-color:#ECF2E6
+// C: color:#7F7F00;background-color:#F2F2E6
+// D: color:#7F3F00;background-color:#F2ECE6
+// F: color:#7F0000;background-color:#F2E6E6
