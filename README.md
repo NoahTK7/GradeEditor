@@ -12,3 +12,11 @@ A web browser extension for termporarily editing grades on the Pinnacle website.
 - edit grade summary page
 
 - attendance?
+
+####TODO
+- edit modals
+- reset assignments, course grade on deactivate
+
+##### 2.0
+- rewrite to modularize
+- model, view structure
