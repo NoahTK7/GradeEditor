@@ -15,7 +15,7 @@ A web browser extension for termporarily editing grades on the Pinnacle website.
 
 ####TODO
 - edit modals
-- update grade to reflect edited assignments
+- reset assignments, course grade on deactivate
 
 ##### 2.0
 - rewrite to modularize

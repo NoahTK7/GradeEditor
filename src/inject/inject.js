@@ -46,7 +46,6 @@ function setDefaultResources() {
         currentPageAssignments[i] = new Assignment(defaultAssignments[i]);
         pageAssignmentsTemplates[i] = new Assignment($(defaultAssignments[i]).clone());
     }
-    //default header grade value?
 }
 
 function load() {
@@ -75,6 +74,8 @@ function unload() {
     //set not loaded
 
     removeComponents();
+
+    //TODO: reset assignments, course grade?
 
     chrome.storage.local.set({"loaded": false});
 
@@ -192,6 +193,8 @@ function attachEventHandlers() {
             });
 
             makeFloatsActive();
+
+            updateCourseGrade();
         });
 
         $(".resetIconAssignment").on("click", function (eventObj) {
@@ -218,7 +221,7 @@ function attachEventHandlers() {
                 currentPageAssignments[i] = new Assignment(copy);
             }
 
-            //update header grade value
+            updateCourseGrade();
 
             removeComponents();
             addButtons();
@@ -263,6 +266,43 @@ function Assignment(element) {
     this.pointsPossible = pointsContents.find(".max").text();
 
     console.log(this.letterGrade, this.pointsEarned, this.pointsPossible, this.percent);
+}
+
+function updateCourseGrade() {
+    var pointsEarnedTotal = 0;
+    var pointsPossibleTotal = 0;
+
+    currentPageAssignments.forEach(function (assignment) {
+        if(!(assignment.pointsEarned == "") && !(assignment.pointsEarned == "X") && !assignment.isRemoved) {
+            pointsEarnedTotal += parseInt(assignment.pointsEarned);
+            pointsPossibleTotal += parseInt(assignment.pointsPossible);
+        }
+
+        console.log(pointsEarnedTotal + " / " + pointsPossibleTotal);
+    });
+
+    var newGrade = Math.round(pointsEarnedTotal/pointsPossibleTotal*100);
+    var letterElement = jQuery("#ContentHeader").find(".letter");
+
+    letterElement.text(newGrade+"%");
+
+    //set colors
+    if (newGrade>=90) {
+        //letterElement.css({"color":"#007F00", "background-color":"#E6F2E6"});
+        letterElement.prop("style", "color:#007F00;background-color:#E6F2E6");
+    } else if (newGrade>=80) {
+        //letterElement.css({"color":"#3F7F00", "background-color":"#ECF2E6"});
+        letterElement.prop("style", "color:#3F7F00;background-color:#ECF2E6");
+    } else if (newGrade>=70) {
+        //letterElement.css({"color":"#7F7F00", "background-color":"#F2F2E6"});
+        letterElement.prop("style", "color:#7F7F00;background-color:#F2F2E6");
+    } else if (newGrade>=60) {
+        //letterElement.css({"color":"#7F3F00", "background-color":"#F2ECE6"});
+        letterElement.prop("style", "color:#7F3F00;background-color:#F2ECE6");
+    } else {
+        //letterElement.css({"color":"#7F0000", "background-color":"#F2E6E6"});
+        letterElement.prop("style", "color:#7F0000;background-color:#F2E6E6");
+    }
 }
 
 //receive messages from page action
