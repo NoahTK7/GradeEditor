@@ -51,7 +51,8 @@ function setDefaultResources() {
 function load() {
     //add buttons, init event handlers (set loaded)
 
-    //.load() edit modal, init modal js
+    addDialogues();
+    //init modal js
 
     addButtons();
 
@@ -81,6 +82,11 @@ function unload() {
 
     chrome.storage.local.set({"loaded": false});
 
+}
+
+function addDialogues(){
+    //edit dialogue
+    $("body").load("edit_dialogue.html");
 }
 
 function addButtons() {
@@ -335,6 +341,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     sendResponse({callback: "failure"});
 
 });
+
+function editAssignmentModal(){
+    
+}
 
 //Edit Modal
 jQuery( function() {
