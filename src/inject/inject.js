@@ -51,7 +51,7 @@ function setDefaultResources() {
 function load() {
     //add buttons, init event handlers (set loaded)
 
-    addDialogues();
+    addDialogs();
     //init modal js
 
     addButtons();
@@ -84,9 +84,9 @@ function unload() {
 
 }
 
-function addDialogues(){
-    //edit dialogue
-    $("body").load("edit_dialogue.html");
+function addDialogs() {
+    //edit Dialog
+    $("body").load("edit_dialog.html");
 }
 
 function addButtons() {
@@ -167,6 +167,8 @@ function attachEventHandlers() {
 
             //make float buttons active
             makeFloatsActive();
+
+            //dialog.dialog("open");
 
             console.log(assignment.element);
 
@@ -254,7 +256,9 @@ function attachEventHandlers() {
     });
 }
 
-
+/*
+ * Assignment model
+ */
 function Assignment(element) {
     var jElement = jQuery(element);
     this.element = element;
@@ -278,12 +282,27 @@ function Assignment(element) {
     console.log(this.letterGrade, this.pointsEarned, this.pointsPossible, this.percent);
 }
 
+function Dialog() {
+    this.dialog;
+    this.form;
+
+    // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
+    this.emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    this.name = $("#name");
+    this.email = $("#email");
+    this.password = $("#password");
+    this.allFields = $([]).add(name).add(email).add(password);
+    this.tips = $(".validateTips");
+}
+
 function updateCourseGrade() {
     var pointsEarnedTotal = 0;
     var pointsPossibleTotal = 0;
 
+    //TODO: categories
+
     currentPageAssignments.forEach(function (assignment) {
-        if(!(assignment.pointsEarned == "") && !(assignment.pointsEarned == "X") && !assignment.isRemoved) {
+        if (!(assignment.pointsEarned == "") && !(assignment.pointsEarned == "X") && !assignment.isRemoved) {
             pointsEarnedTotal += parseInt(assignment.pointsEarned);
             pointsPossibleTotal += parseInt(assignment.pointsPossible);
         }
@@ -291,22 +310,22 @@ function updateCourseGrade() {
         console.log(pointsEarnedTotal + " / " + pointsPossibleTotal);
     });
 
-    var newGrade = Math.round(pointsEarnedTotal/pointsPossibleTotal*100);
+    var newGrade = Math.round(pointsEarnedTotal / pointsPossibleTotal * 100);
     var letterElement = jQuery("#ContentHeader").find(".letter");
 
-    letterElement.text(newGrade+"%");
+    letterElement.text(newGrade + "%");
 
     //set colors
-    if (newGrade>=90) {
+    if (newGrade >= 90) {
         //letterElement.css({"color":"#007F00", "background-color":"#E6F2E6"});
         letterElement.prop("style", "color:#007F00;background-color:#E6F2E6");
-    } else if (newGrade>=80) {
+    } else if (newGrade >= 80) {
         //letterElement.css({"color":"#3F7F00", "background-color":"#ECF2E6"});
         letterElement.prop("style", "color:#3F7F00;background-color:#ECF2E6");
-    } else if (newGrade>=70) {
+    } else if (newGrade >= 70) {
         //letterElement.css({"color":"#7F7F00", "background-color":"#F2F2E6"});
         letterElement.prop("style", "color:#7F7F00;background-color:#F2F2E6");
-    } else if (newGrade>=60) {
+    } else if (newGrade >= 60) {
         //letterElement.css({"color":"#7F3F00", "background-color":"#F2ECE6"});
         letterElement.prop("style", "color:#7F3F00;background-color:#F2ECE6");
     } else {
@@ -315,7 +334,10 @@ function updateCourseGrade() {
     }
 }
 
-//receive messages from page action
+/*
+ * activate/deactivate extension on page
+ * receive messages from page action
+ */
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     if (request.event == "activate") {
@@ -342,103 +364,100 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 });
 
-function editAssignmentModal(){
-    
-}
+function editAssignmentDialog() {
+    jQuery(function () {
+        var dialog, form,
 
-//Edit Modal
-jQuery( function() {
-    var dialog, form,
- 
-      // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
-      emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-      name = $( "#name" ),
-      email = $( "#email" ),
-      password = $( "#password" ),
-      allFields = $( [] ).add( name ).add( email ).add( password ),
-      tips = $( ".validateTips" );
- 
-    function updateTips( t ) {
-      tips
-        .text( t )
-        .addClass( "ui-state-highlight" );
-      setTimeout(function() {
-        tips.removeClass( "ui-state-highlight", 1500 );
-      }, 500 );
-    }
- 
-    function checkLength( o, n, min, max ) {
-      if ( o.val().length > max || o.val().length < min ) {
-        o.addClass( "ui-state-error" );
-        updateTips( "Length of " + n + " must be between " +
-          min + " and " + max + "." );
-        return false;
-      } else {
-        return true;
-      }
-    }
- 
-    function checkRegexp( o, regexp, n ) {
-      if ( !( regexp.test( o.val() ) ) ) {
-        o.addClass( "ui-state-error" );
-        updateTips( n );
-        return false;
-      } else {
-        return true;
-      }
-    }
- 
-    function addUser() {
-      var valid = true;
-      allFields.removeClass( "ui-state-error" );
- 
-      valid = valid && checkLength( name, "username", 3, 16 );
-      valid = valid && checkLength( email, "email", 6, 80 );
-      valid = valid && checkLength( password, "password", 5, 16 );
- 
-      valid = valid && checkRegexp( name, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
-      valid = valid && checkRegexp( email, emailRegex, "eg. ui@jquery.com" );
-      valid = valid && checkRegexp( password, /^([0-9a-zA-Z])+$/, "Password field only allow : a-z 0-9" );
- 
-      if ( valid ) {
-        $( "#users tbody" ).append( "<tr>" +
-          "<td>" + name.val() + "</td>" +
-          "<td>" + email.val() + "</td>" +
-          "<td>" + password.val() + "</td>" +
-        "</tr>" );
-        dialog.dialog( "close" );
-      }
-      return valid;
-    }
- 
-    dialog = $( "#dialog-form" ).dialog({
-      autoOpen: false,
-      height: 400,
-      width: 350,
-      modal: true,
-      buttons: {
-        "Create an account": addUser,
-        Cancel: function() {
-          dialog.dialog( "close" );
+            // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
+            emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+            name = $("#name"),
+            email = $("#email"),
+            password = $("#password"),
+            allFields = $([]).add(name).add(email).add(password),
+            tips = $(".validateTips");
+
+        function updateTips(t) {
+            tips
+                .text(t)
+                .addClass("ui-state-highlight");
+            setTimeout(function () {
+                tips.removeClass("ui-state-highlight", 1500);
+            }, 500);
         }
-      },
-      close: function() {
-        form[ 0 ].reset();
-        allFields.removeClass( "ui-state-error" );
-      }
+
+        function checkLength(o, n, min, max) {
+            if (o.val().length > max || o.val().length < min) {
+                o.addClass("ui-state-error");
+                updateTips("Length of " + n + " must be between " +
+                    min + " and " + max + ".");
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function checkRegexp(o, regexp, n) {
+            if (!( regexp.test(o.val()) )) {
+                o.addClass("ui-state-error");
+                updateTips(n);
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function addUser() {
+            var valid = true;
+            allFields.removeClass("ui-state-error");
+
+            valid = valid && checkLength(name, "username", 3, 16);
+            valid = valid && checkLength(email, "email", 6, 80);
+            valid = valid && checkLength(password, "password", 5, 16);
+
+            valid = valid && checkRegexp(name, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter.");
+            valid = valid && checkRegexp(email, emailRegex, "eg. ui@jquery.com");
+            valid = valid && checkRegexp(password, /^([0-9a-zA-Z])+$/, "Password field only allow : a-z 0-9");
+
+            if (valid) {
+                $("#users tbody").append("<tr>" +
+                    "<td>" + name.val() + "</td>" +
+                    "<td>" + email.val() + "</td>" +
+                    "<td>" + password.val() + "</td>" +
+                    "</tr>");
+                dialog.dialog("close");
+            }
+            return valid;
+        }
+
+        dialog = $("#dialog-form").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Create an account": addUser,
+                Cancel: function () {
+                    dialog.dialog("close");
+                }
+            },
+            close: function () {
+                form[0].reset();
+                allFields.removeClass("ui-state-error");
+            }
+        });
+
+        form = dialog.find("form").on("submit", function (event) {
+            event.preventDefault();
+            addUser();
+        });
+
+        //edit button clicked event
+        //TODO: pass assignment info to modal?
+        $("#create-user").button().on("click", function () {
+
+        });
     });
- 
-    form = dialog.find( "form" ).on( "submit", function( event ) {
-      event.preventDefault();
-      addUser();
-    });
- 
-    //edit button clicked event
-    //TODO: pass assignment info to modal?
-    $( "#create-user" ).button().on( "click", function() {
-      dialog.dialog( "open" );
-    });
-  } );
+}
 
 //grade colors
 // A (X): color:#007F00;background-color:#E6F2E6
