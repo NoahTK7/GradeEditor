@@ -1,15 +1,32 @@
 var Assignemnt = Backbone.Model.extend({
+
+    idAttribute: "_id",
     
     defaults: function() {
-      return {
-        title: "new assignemnt...",
-        order: Assignments.nextOrder(),
-        active: false
-      };
+        return {
+            order: Assignments.nextOrder(),
+            active: true,
+
+            // month: , //none
+            // day: , //none
+
+            // scoredPoints: , //--
+            // maxPoints: , //--
+            // percentage: , //--
+            // letter: , // none
+
+            // weight: , //1
+
+            // title: , //title...
+            // comment: , //comment...
+
+            // letterColor: , //grey
+            // backgroundColor: //grey
+        };
     },
 
     toggle: function() {
-      this.save({active: !this.get("active")});
+        this.save({active: !this.get("active")});
     }
 
 });
@@ -21,18 +38,200 @@ var AssignmentList = Backbone.Collection.extend({
     active: function(){
         return this.where({active: true});
     },
+
+    existing: function() {
+        return this.where({isCustom: false});
+    },
     
     nextOrder: function() {
       if (!this.length) return 1;
       return this.last().get('order') + 1;
-    },
-    
-    comparator: 'order'
+  },
+
+  comparator: 'order'
 
 });
 
 var Assignemnts = new AssignmentList;
 
+var AssignmentView = Backbone.View.extend({
+
+    tagName: "tr",
+
+    template: _.template($('#assignment-template').html()),
+
+    ////////////////////////////
+
+    events: {
+
+    },
+
+    // The TodoView listens for changes to its model, re-rendering. Since there's
+    // a one-to-one correspondence between a **Todo** and a **TodoView** in this
+    // app, we set a direct reference on the model for convenience.
+    initialize: function() {
+      this.listenTo(this.model, 'change', this.render);
+      this.listenTo(this.model, 'destroy', this.remove);
+    },
+
+    // Re-render the titles of the todo item.
+    render: function() {
+      this.$el.html(this.template(this.model.toJSON()));
+      //this.$el.toggleClass('done', this.model.get('done'));
+      //this.input = this.$('.edit');
+      return this;
+    },
+
+    // Toggle the `"done"` state of the model.
+    toggleDone: function() {
+      this.model.toggle();
+    },
+
+    // Switch this view into `"editing"` mode, displaying the input field.
+    edit: function() {
+      this.$el.addClass("editing");
+      this.input.focus();
+    },
+
+    // Close the `"editing"` mode, saving changes to the todo.
+    close: function() {
+      var value = this.input.val();
+      if (!value) {
+        this.clear();
+      } else {
+        this.model.save({title: value});
+        this.$el.removeClass("editing");
+      }
+    },
+
+    // If you hit `enter`, we're through editing the item.
+    updateOnEnter: function(e) {
+      if (e.keyCode == 13) this.close();
+    },
+
+    // Remove the item, destroy the model.
+    clear: function() {
+      this.model.destroy();
+    }
+
+});
+
+var AppView = Backbone.View.extend({
+
+    // Instead of generating a new element, bind to the existing skeleton of
+    // the App already present in the HTML.
+    el: $("#Assignments tbody"),
+
+    // Delegated events for creating new items, and clearing completed ones.
+    events: {
+        //"keypress #new-todo":  "createOnEnter",
+        //"click #clear-completed": "clearCompleted",
+        //"click #toggle-all": "toggleAllComplete"
+    },
+
+    initialize: function() {
+
+        $.get("assignment-template.html", function(data){
+            $el.append(data);
+        });
+        
+
+        this.defaultAssignments = $el.find("[data-assignment]");
+
+        //create models for exisitng assignments
+        //?? just need to call method for each
+        _.invoke(this.defaultAssignments, this.createModel);
+
+        //this.input = this.$("#new-todo");
+        //this.allCheckbox = this.$("#toggle-all")[0];
+
+        //listent to events of Assignments collection, assign method
+        this.listenTo(Assignments, 'add', this.addOne);
+        this.listenTo(Assignments, 'reset', this.addAll);
+        this.listenTo(Assignments, 'all', this.render);
+
+        //control buttons
+        //this.footer = this.$('footer');
+        //this.main = $('#main');
+
+    },
+
+    createModel: function(element) {
+        Assignments.create({
+            _id: element.attr("data-assignemnt"),
+
+            month: $(element).find(".m").html(),
+            day: $(element).find(".day").html(),
+
+            scoredPoints: $(element).find(".points").html(),
+            maxPoints: $(element).find(".max").html(),
+            percentage: $(element).find(".percent").html(), //remove %
+            letter: $(element).find(".dLetter").html(),
+
+            weight: $(element).find(".weight").html(), //remove x
+
+            title: $(element).find(".title").html(),
+            comment: $(element).find(".comments").html(),
+
+            letterColor: $(element).find("div.letter").css("color"),
+            backgroundColor: $(element).find("div.letter").css("background-color")
+        });
+    },
+
+    // Re-rendering the App just means refreshing the statistics -- the rest
+    // of the app doesn't change.
+    render: function() {
+      var done = Todos.done().length;
+      var remaining = Todos.remaining().length;
+
+      if (Todos.length) {
+        this.main.show();
+        this.footer.show();
+        this.footer.html(this.statsTemplate({done: done, remaining: remaining}));
+    } else {
+        this.main.hide();
+        this.footer.hide();
+    }
+
+    this.allCheckbox.checked = !remaining;
+},
+
+    // Add a single todo item to the list by creating a view for it, and
+    // appending its element to the `<ul>`.
+    addOne: function(assignemnt) {
+      var view = new AssignmentView({model: assignemnt});
+      this.$el.append(view.render().el);
+  },
+
+    // Add all items in the **Todos** collection at once.
+    addAll: function() {
+      Assignments.each(this.addOne, this);
+  },
+
+    // If you hit return in the main input field, create new **Todo** model,
+    // persisting it to *localStorage*.
+    createOnEnter: function(e) {
+      if (e.keyCode != 13) return;
+      if (!this.input.val()) return;
+
+      Todos.create({title: this.input.val()});
+      this.input.val('');
+  },
+
+    // Clear all done todo items, destroying their models.
+    clearCompleted: function() {
+      _.invoke(Todos.done(), 'destroy');
+      return false;
+  },
+
+  toggleAllComplete: function () {
+      var done = this.allCheckbox.checked;
+      Todos.each(function (todo) { todo.save({'done': done}); });
+  }
+
+});
+
+var App = new AppView;
 
 ///////////////////////////////////////////////////////////////////
 //begin old

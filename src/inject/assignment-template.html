@@ -1,0 +1,32 @@
+<script type="text/template" id="assignment-template">
+    <tr class="assignment"  data-assignment="<%- _id %>">
+        <td class="icon-date">
+            <div>
+                <span class="m"><%- month %></span>
+                <span class="day"><%- day %></span>
+            </div>
+        </td>
+        <td class="description">
+            <div class="numeric">
+                <span class="points"><%- scoredPoints %></span>
+                <span class="sep">/</span>
+                <span class="max"><%- maxPoints %></span>
+
+                <span class="weight">x<%- weight %></span>
+
+            </div>
+            <div class="title"><%- title %></div>
+
+            <div class="comments">
+                <%- comment %>
+            </div>
+        </td>
+        <td class="letter">
+            <div class="letter" style="color:<%- letterColor %>;background-color:<%- backgroundColor %>">
+                <div>
+                    <div><div class="dLetter"><%- letter %></div><span class="percent"><%- percentage %>%</span></div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</script>
