@@ -1,3 +1,43 @@
+var Assignemnt = Backbone.Model.extend({
+    
+    defaults: function() {
+      return {
+        title: "new assignemnt...",
+        order: Assignments.nextOrder(),
+        active: false
+      };
+    },
+
+    toggle: function() {
+      this.save({active: !this.get("active")});
+    }
+
+});
+
+var AssignmentList = Backbone.Collection.extend({
+
+    model: Assignemnt,
+    
+    active: function(){
+        return this.where({active: true});
+    },
+    
+    nextOrder: function() {
+      if (!this.length) return 1;
+      return this.last().get('order') + 1;
+    },
+    
+    comparator: 'order'
+
+});
+
+var Assignemnts = new AssignmentList;
+
+
+///////////////////////////////////////////////////////////////////
+//begin old
+
+//util globals
 var consolePrefix = "[GradeEditor] ";
 
 var currentPageAssignments = [];
